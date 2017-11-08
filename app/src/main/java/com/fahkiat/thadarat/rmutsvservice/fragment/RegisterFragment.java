@@ -4,16 +4,20 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.fahkiat.thadarat.rmutsvservice.MainActivity;
 import com.fahkiat.thadarat.rmutsvservice.MyAlert;
 import com.fahkiat.thadarat.rmutsvservice.R;
+import com.fahkiat.thadarat.rmutsvservice.utility.Myconstant;
+import com.fahkiat.thadarat.rmutsvservice.utility.UploadNewUser;
 
 /**
  * Created by lenovo on 7/11/2560.
@@ -91,10 +95,36 @@ public class RegisterFragment extends android.support.v4.app.Fragment {
                             "Please Choose Category");
                 } else {
 //                    Choosed Choice
+                    uploadUserToServer();
                 }
 
             }   // onClick
         });
+    }
+
+    private void uploadUserToServer() {
+
+        String tag = "8novV1";
+        try {
+            Myconstant myconstant = new Myconstant();
+            UploadNewUser uploadNewUser = new UploadNewUser(getActivity());
+            uploadNewUser.execute(nameString, categoryString, userString, passwordString, myconstant.getUrlpostData());
+            String result = uploadNewUser.get();
+            Log.d(tag, "Result ==>" + result);
+            if (Boolean.parseBoolean(result)) {
+//                Success Upload
+                getActivity().getSupportFragmentManager().popBackStack();
+                Toast.makeText(getActivity(),
+                        "Success UpDate User", Toast.LENGTH_SHORT).show();
+
+            }else {
+//                Error Upload
+                Toast.makeText(getActivity(), "Cannot UpDate User", Toast.LENGTH_SHORT).show();
+            }
+        }catch (Exception e){
+            Log.d(tag, "e ==>" + e.toString());
+
+        }
     }
 
     private void toolbarController() {
