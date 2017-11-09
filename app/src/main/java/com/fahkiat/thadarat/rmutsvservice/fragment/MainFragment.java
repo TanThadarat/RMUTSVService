@@ -15,7 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fahkiat.thadarat.rmutsvservice.MyAlert;
+import com.fahkiat.thadarat.rmutsvservice.MyServiceActivity;
 import com.fahkiat.thadarat.rmutsvservice.R;
+import com.fahkiat.thadarat.rmutsvservice.SalelerActivity;
 import com.fahkiat.thadarat.rmutsvservice.utility.GetAllData;
 import com.fahkiat.thadarat.rmutsvservice.utility.Myconstant;
 
@@ -94,10 +96,16 @@ public class MainFragment extends Fragment{
                 myAlert.myDialog("User False","No This User in my Database");
             } else if (passwordString.equals(userStrings1[4])) {
                 Toast.makeText(getActivity(),"Welcome" + userStrings1[1], Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getActivity(), MyServiceActivity.class);
+                intent.putExtra("Login", userStrings1);
+                getActivity().startActivity(intent);
+                getActivity().finish();
             } else {
                 MyAlert myAlert = new MyAlert(getActivity());
                 myAlert.myDialog("Password False","Please Try Again Password False");
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();
