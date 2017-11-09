@@ -1,17 +1,22 @@
 package com.fahkiat.thadarat.rmutsvservice.fragment;
 
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.fahkiat.thadarat.rmutsvservice.MyServiceActivity;
 import com.fahkiat.thadarat.rmutsvservice.R;
+import com.fahkiat.thadarat.rmutsvservice.utility.DeleteData;
 import com.fahkiat.thadarat.rmutsvservice.utility.GetAllData;
 import com.fahkiat.thadarat.rmutsvservice.utility.ListViewAdapter;
 import com.fahkiat.thadarat.rmutsvservice.utility.Myconstant;
@@ -60,7 +65,7 @@ public class ServiceFragment extends android.support.v4.app.Fragment{
             Log.d("9novV1", "JSON ==> " + resultJSON);
             JSONArray jsonArray = new JSONArray(resultJSON);
 
-            String[] nameStrings = new String[jsonArray.length()];
+            final String[] nameStrings = new String[jsonArray.length()];
             String[] catStrings = new String[jsonArray.length()];
             String[] userStrings = new String[jsonArray.length()];
             String[] passwordStrings = new String[jsonArray.length()];
@@ -77,11 +82,62 @@ public class ServiceFragment extends android.support.v4.app.Fragment{
                 ListViewAdapter listViewAdapter = new ListViewAdapter(getActivity(),
                         nameStrings, catStrings, userStrings, passwordStrings);
                 listView.setAdapter(listViewAdapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        confirmDialog(nameStrings[1]);
+                    }
+                });
+
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void confirmDialog(final String nameString) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setCancelable(false);
+        builder.setIcon(R.drawable.ic_action_alert);
+        builder.setTitle("Ypu Choose" + nameString);
+        builder.setMessage("What do you want ?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deleteDataWhere(nameString);
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        })
+        builder.show();
+    }
+
+    private void deleteDataWhere(String nameString) {
+        try {
+
+            Myconstant myconstant = new Myconstant();
+            DeleteData deleteData = new DeleteData(getActivity());
+            deleteData.execute(nameString, myconstant.getUrlDeleteData());
+
+            if (Boolean.parseBoolean(deleteData.get())) {
+                Toast.makeText(getActivity(), "Delete Success", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Delete Error", Toast.LENGTH_SHORT).show();
+            }
+                    createListView();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void createToolbar(String setTile) {
